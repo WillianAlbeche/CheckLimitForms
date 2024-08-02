@@ -1,0 +1,67 @@
+function checkWorkshopLimit(e) {
+    var form = FormApp.getActiveForm();
+    var response = e.response;
+    var itemResponses = response.getItemResponses();
+    var workshopQuestionTitle = 'OFICINAS'; // Título da sua pergunta de oficina
+    var workshopLimits = {
+      'HANDEBOL - 9H': 15,
+      'HANDEBOL - 10H': 15,
+      'HANDEBOL - 11H': 15,
+      'VOLEIBOL - 9H': 15,
+      'VOLEIBOL - 10H': 15,
+      'VOLEIBOL - 11H': 15,
+      'FUTEBOL - 9H': 15,
+      'FUTEBOL - 10H': 15,
+      'FUTEBOL - 11H': 15,
+      'BEACH TENIS - 9H (Trazer Raquete)': 15,
+      'BEACH TENIS - 10H (Trazer Raquete)': 15,
+      'BEACH TENIS - 11H (Trazer Raquete)': 15
+    };
+    var workshopCounts = {
+      'HANDEBOL - 9H': 0,
+      'HANDEBOL - 10H': 0,
+      'HANDEBOL - 11H': 0,
+      'VOLEIBOL - 9H': 0,
+      'VOLEIBOL - 10H': 0,
+      'VOLEIBOL - 11H': 0,
+      'FUTEBOL - 9H': 0,
+      'FUTEBOL - 10H': 0,
+      'FUTEBOL - 11H': 0,
+      'BEACH TENIS - 9H (Trazer Raquete)': 0,
+      'BEACH TENIS - 10H (Trazer Raquete)': 0,
+      'BEACH TENIS - 11H (Trazer Raquete)': 0
+    };
+  
+    // Contar respostas já existentes
+    var allResponses = form.getResponses();
+    for (var i = 0; i < allResponses.length; i++) {
+      var currentResponse = allResponses[i].getItemResponses();
+      for (var j = 0; j < currentResponse.length; j++) {
+        if (currentResponse[j].getItem().getTitle() == workshopQuestionTitle) {
+          var answer = currentResponse[j].getResponse();
+          if (workshopCounts.hasOwnProperty(answer)) {
+            workshopCounts[answer]++;
+          }
+        }
+      }
+    }
+  
+    // Verificar a resposta atual
+    for (var i = 0; i < itemResponses.length; i++) {
+      if (itemResponses[i].getItem().getTitle() == workshopQuestionTitle) {
+        var chosenWorkshop = itemResponses[i].getResponse();
+        if (workshopCounts[chosenWorkshop] >= workshopLimits[chosenWorkshop]) {
+          form.deleteResponse(response.getId());
+          MailApp.sendEmail(response.getRespondentEmail(), 'Inscrição não realizada', 'A oficina escolhida já está cheia. Por favor, escolha outra.');
+        }
+      }
+    }
+  }
+  
+  function setupTrigger() {
+    ScriptApp.newTrigger('checkWorkshopLimit')
+      .forForm(FormApp.getActiveForm())
+      .onFormSubmit()
+      .create();
+  }
+  
