@@ -52,7 +52,7 @@ function checkWorkshopLimit(e) {
         var chosenWorkshop = itemResponses[i].getResponse();
         if (workshopCounts[chosenWorkshop] >= workshopLimits[chosenWorkshop]) {
           form.deleteResponse(response.getId());
-          MailApp.sendEmail(response.getRespondentEmail(), 'Inscrição não realizada', 'A oficina escolhida já está cheia. Por favor, escolha outra.');
+          MailApp.sendEmail(response.getRespondentEmail(), 'Olá! Esta oficina já completou o número de vagas! Por favor escolha outra. Também lembramos que haverá atividades que não necessitam de inscrição prévia. Divirtam-se!');
         }
       }
     }
